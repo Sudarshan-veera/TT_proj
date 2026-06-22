@@ -11,67 +11,105 @@ module tt_um_anomaly_detector (
     input  wire       rst_n
 );
 
-    // ── Window (4 samples, 8-bit each) ───────────────────────────────
+    // Disable bidirectional IO
+    assign uio_out = 8'b0;
+    assign uio_oe  = 8'b0;
+
+    // -------------------------
+    // Registers
+    // -------------------------
     reg [7:0] w0, w1, w2, w3;
-    reg [9:0] sum;
-    reg [1:0] count;
-    reg       ready;
-    reg       alert;
-    reg [7:0] mean_r;
+    reg [1:0] wr_ptr;
+    reg [2:0] count;
 
-    // ── All bidirectionals as inputs ─────────────────────────────────
-    assign uio_oe  = 8'd0;
-    assign uio_out = 8'd0;
+    reg [7:0] mean;
+    reg [7:0] mean_reg;   // IMPORTANT: stable previous mean
 
-    // ── Threshold driven by uio_in ───────────────────────────────────
-    wire [7:0] threshold = uio_in;
+    reg alert;
+    reg ready;
 
-    // ── Mean (combinational) ─────────────────────────────────────────
-    wire [7:0] mean_c = sum[9:2];
+    // -------------------------
+    // Difference uses OLD mean
+    // -------------------------
+    wire [7:0] diff =
+        (ui_in >= mean_reg) ? (ui_in - mean_reg) : (mean_reg - ui_in);
 
-    // ── Absolute difference (combinational) ──────────────────────────
-    wire [8:0] diff_s  = {1'b0, ui_in} - {1'b0, mean_c};
-    wire [7:0] diff_ab = diff_s[8] ? (~diff_s[7:0] + 8'd1) : diff_s[7:0];
+    // -------------------------
+    // Compute next sum
+    // -------------------------
+    wire [9:0] sum_next =
+        (wr_ptr == 2'd0) ?
+            ({2'b00, ui_in} + {2'b00, w1} + {2'b00, w2} + {2'b00, w3}) :
+        (wr_ptr == 2'd1) ?
+            ({2'b00, w0} + {2'b00, ui_in} + {2'b00, w2} + {2'b00, w3}) :
+        (wr_ptr == 2'd2) ?
+            ({2'b00, w0} + {2'b00, w1} + {2'b00, ui_in} + {2'b00, w3}) :
+            ({2'b00, w0} + {2'b00, w1} + {2'b00, w2} + {2'b00, ui_in});
 
+    // -------------------------
+    // Sequential logic
+    // -------------------------
     always @(posedge clk or negedge rst_n) begin
+
         if (!rst_n) begin
-            w0    <= 8'd0; w1 <= 8'd0; w2 <= 8'd0; w3 <= 8'd0;
-            sum   <= 10'd0;
-            count <= 2'd0;
-            ready <= 1'b0;
-            alert <= 1'b0;
-            mean_r<= 8'd0;
-        end else if (ena) begin
-            // Sliding window sum: remove oldest (w3), add newest (ui_in)
-            sum <= sum - {2'b00, w3} + {2'b00, ui_in};
+            w0 <= 0; w1 <= 0; w2 <= 0; w3 <= 0;
+            wr_ptr <= 0;
+            count <= 0;
 
-            // Shift window
-            w3 <= w2;
-            w2 <= w1;
-            w1 <= w0;
-            w0 <= ui_in;
+            mean <= 0;
+            mean_reg <= 0;
 
-            // Ready flag
-            if (!ready) begin
-                if (count == 2'd3)
-                    ready <= 1'b1;
+            alert <= 0;
+            ready <= 0;
+        end
+
+        else if (ena) begin
+
+            // Save previous mean for stable comparison
+            mean_reg <= mean;
+
+            // Store input into circular buffer
+            case (wr_ptr)
+                2'd0: w0 <= ui_in;
+                2'd1: w1 <= ui_in;
+                2'd2: w2 <= ui_in;
+                2'd3: w3 <= ui_in;
+            endcase
+
+            // update pointer
+            wr_ptr <= (wr_ptr == 2'd3) ? 2'd0 : wr_ptr + 1;
+
+            // sample counter
+            if (count < 3'd4)
+                count <= count + 1;
+
+            // after enough samples
+            if (count >= 3'd2) begin
+                ready <= 1'b1;
+
+                // update mean
+                mean <= sum_next[9:2];
+
+                // anomaly detection using OLD mean
+                if (diff > 8'd20)
+                    alert <= 1'b1;
                 else
-                    count <= count + 1'd1;
+                    alert <= 1'b0;
+
+            end
+            else begin
+                ready <= 1'b0;
+                alert <= 1'b0;
             end
 
-            // Latch mean for output readback
-            mean_r <= mean_c;
-
-            // Alert decision (only when window is full)
-            if (ready)
-                alert <= (diff_ab > threshold);
-            else
-                alert <= 1'b0;
         end
     end
 
+    // -------------------------
+    // Output mapping
+    // -------------------------
     assign uo_out[0]   = alert;
     assign uo_out[1]   = ready;
-    assign uo_out[7:2] = mean_r[7:2];
+    assign uo_out[7:2] = mean[7:2];
 
 endmodule

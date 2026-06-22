@@ -1,20 +1,14 @@
-<!---
-
-This file is used to generate your project datasheet. Please fill in the information below and delete any unused
-sections.
-
-You can also include images in this folder and reference them in the markdown. Each image must be less than
-512 kb in size, and the combined size of all images must be less than 1 MB.
--->
+<!--- docs/info.md -->
 
 ## How it works
 
-Explain how your project works
+A **sliding window anomaly detector** that monitors 8-bit sensor data in real time.
 
-## How to test
+- Maintains a 4-sample shift register (circular buffer)
+- Computes the mean of the window using a running sum + right-shift (÷4)
+- On every clock cycle, computes |new_sample − mean|
+- If the deviation exceeds the programmable threshold (set via `uio` pins), raises **ALERT**
 
-Explain how to use your project
-
-## External hardware
-
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+### Algorithm 
+### mean = (w[0] + w[1] + w[2] + w[3]) >> 2
+### if |input - mean| > threshold: ALERT=1
