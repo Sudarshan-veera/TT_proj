@@ -1,10 +1,9 @@
 project:
   title: "Tiny Anomaly Detection Engine"
-  author: "Susan"           # ← your name
-  discord: ""               # optional
-  description: "Moving average anomaly detector: raises ALERT when sensor input deviates from 4-sample mean by more than a programmable threshold."
+  author: "Sudarshan"
+  description: "Moving average anomaly detector"
   language: "Verilog"
-  clock_hz: 10000000        # 10 MHz (conservative for SKY130)
+  clock_hz: 10000000
   tiles: "1x1"
   top_module: "tt_um_anomaly_detector"
 
@@ -20,14 +19,10 @@ pinout:
   ui[5]: "sensor_data[5]"
   ui[6]: "sensor_data[6]"
   ui[7]: "sensor_data[7]"
+
   uo[0]: "ALERT"
   uo[1]: "READY"
-  uo[2]: "mean[2]"
-  uo[3]: "mean[3]"
-  uo[4]: "mean[4]"
-  uo[5]: "mean[5]"
-  uo[6]: "mean[6]"
-  uo[7]: "mean[7]"
+
   uio[0]: "threshold[0]"
   uio[1]: "threshold[1]"
   uio[2]: "threshold[2]"
