@@ -19,10 +19,14 @@ pinout:
   ui[5]: "sensor_data[5]"
   ui[6]: "sensor_data[6]"
   ui[7]: "sensor_data[7]"
-
   uo[0]: "ALERT"
   uo[1]: "READY"
-
+  uo[2]: ""
+  uo[3]: ""
+  uo[4]: ""
+  uo[5]: ""
+  uo[6]: ""
+  uo[7]: ""
   uio[0]: "threshold[0]"
   uio[1]: "threshold[1]"
   uio[2]: "threshold[2]"
