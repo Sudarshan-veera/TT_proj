@@ -11,10 +11,8 @@ project:
   top_module: "tt_um_anomaly_detector"
 
   tiles: "1x1"
-
   source_files:
-    - "src/project.v"
-
+  - "project.v"
 
 pinout:
 
