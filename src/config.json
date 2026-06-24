@@ -15,6 +15,5 @@
   "FP_SIZING": "absolute",
   "DIE_AREA": "0 0 161 111.52",
   "FP_CORE_UTIL": 40,
-  "FP_PDN_UPPER_LAYER": "met4",
-  "FP_PDN_LOWER_LAYER": "met3"
+  "RT_MAX_LAYER": "met4"
 }
