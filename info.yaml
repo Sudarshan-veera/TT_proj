@@ -3,49 +3,46 @@ yaml_version: 6
 project:
   title: "Anomaly Detector"
   author: "Susan"
-  description: "4 mode hardware anomaly detector with threshold monitoring"
+  description: "4 mode hardware anomaly detector"
   language: "Verilog"
 
   clock_hz: 10000000
 
   top_module: "tt_um_anomaly_detector"
 
-  source_files:
-    - src/project.v
-
   tiles: "1x1"
+
+  source_files:
+    - "src/project.v"
 
 
 pinout:
 
-  # 8 bit sensor input
-  ui[0]: "sensor_data[0]"
-  ui[1]: "sensor_data[1]"
-  ui[2]: "sensor_data[2]"
-  ui[3]: "sensor_data[3]"
-  ui[4]: "sensor_data[4]"
-  ui[5]: "sensor_data[5]"
-  ui[6]: "sensor_data[6]"
-  ui[7]: "sensor_data[7]"
+  ui[0]: "sensor_data_bit0"
+  ui[1]: "sensor_data_bit1"
+  ui[2]: "sensor_data_bit2"
+  ui[3]: "sensor_data_bit3"
+  ui[4]: "sensor_data_bit4"
+  ui[5]: "sensor_data_bit5"
+  ui[6]: "sensor_data_bit6"
+  ui[7]: "sensor_data_bit7"
 
 
-  # bidirectional pins used as inputs
-  uio[0]: "mode_bit0"
-  uio[1]: "mode_bit1"
-  uio[2]: "threshold_bit0"
-  uio[3]: "threshold_bit1"
-  uio[4]: "threshold_bit2"
-  uio[5]: "threshold_bit3"
-  uio[6]: "threshold_bit4"
-  uio[7]: "threshold_bit5"
-
-
-  # anomaly outputs
-  uo[0]: "alert_latched"
-  uo[1]: "current_alert"
-  uo[2]: "detector_ready"
-  uo[3]: "high_anomaly"
-  uo[4]: "low_anomaly"
+  uo[0]: "alert"
+  uo[1]: "ready"
+  uo[2]: "mean_bit2"
+  uo[3]: "mean_bit3"
+  uo[4]: "mean_bit4"
   uo[5]: "mean_bit5"
   uo[6]: "mean_bit6"
   uo[7]: "mean_bit7"
+
+
+  uio[0]: "unused"
+  uio[1]: "unused"
+  uio[2]: "unused"
+  uio[3]: "unused"
+  uio[4]: "unused"
+  uio[5]: "unused"
+  uio[6]: "unused"
+  uio[7]: "unused"
