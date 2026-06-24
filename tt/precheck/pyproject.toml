@@ -1,0 +1,15 @@
+[project]
+name = "tt-precheck"
+requires-python = ">=3.11"
+dynamic = ["version"]
+dependencies = [
+    "gdstk",
+    "klayout>=0.30.8,<0.31.0",
+    "numpy<2",
+    "pytest",
+    "PyYAML",
+    "yowasp-yosys",
+]
+
+[tool.setuptools]
+packages = []
