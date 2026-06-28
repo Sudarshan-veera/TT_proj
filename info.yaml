@@ -1,46 +1,41 @@
-yaml_version: 6
-
 project:
-  title: "Anomaly Detector"
-  author: "Susan"
-  description: "4 mode hardware anomaly detector"
+  title: "Tiny Anomaly Detection Engine"
+  author: "Sudarshan"
+  description: "Sliding window anomaly detector. ui_in=sensor data. uio_in[6:0]=threshold. uio_in[7]=mode (0=stream 1=hold). uo_out[0]=ALERT uo_out[1]=READY."
   language: "Verilog"
-
   clock_hz: 10000000
-
+  tiles: "1x1"
   top_module: "tt_um_anomaly_detector"
 
-  tiles: "1x1"
-  source_files:
+source_files:
   - "project.v"
 
 pinout:
+  ui[0]: "sensor_data[0]"
+  ui[1]: "sensor_data[1]"
+  ui[2]: "sensor_data[2]"
+  ui[3]: "sensor_data[3]"
+  ui[4]: "sensor_data[4]"
+  ui[5]: "sensor_data[5]"
+  ui[6]: "sensor_data[6]"
+  ui[7]: "sensor_data[7]"
 
-  ui[0]: "sensor_data_bit0"
-  ui[1]: "sensor_data_bit1"
-  ui[2]: "sensor_data_bit2"
-  ui[3]: "sensor_data_bit3"
-  ui[4]: "sensor_data_bit4"
-  ui[5]: "sensor_data_bit5"
-  ui[6]: "sensor_data_bit6"
-  ui[7]: "sensor_data_bit7"
+  uo[0]: "ALERT"
+  uo[1]: "READY"
+  uo[2]: "mean[2]"
+  uo[3]: "mean[3]"
+  uo[4]: "mean[4]"
+  uo[5]: "mean[5]"
+  uo[6]: "mean[6]"
+  uo[7]: "mean[7]"
 
+  uio[0]: "threshold[0]"
+  uio[1]: "threshold[1]"
+  uio[2]: "threshold[2]"
+  uio[3]: "threshold[3]"
+  uio[4]: "threshold[4]"
+  uio[5]: "threshold[5]"
+  uio[6]: "threshold[6]"
+  uio[7]: "mode"
 
-  uo[0]: "alert"
-  uo[1]: "ready"
-  uo[2]: "mean_bit2"
-  uo[3]: "mean_bit3"
-  uo[4]: "mean_bit4"
-  uo[5]: "mean_bit5"
-  uo[6]: "mean_bit6"
-  uo[7]: "mean_bit7"
-
-
-  uio[0]: "unused"
-  uio[1]: "unused"
-  uio[2]: "unused"
-  uio[3]: "unused"
-  uio[4]: "unused"
-  uio[5]: "unused"
-  uio[6]: "unused"
-  uio[7]: "unused"
+yaml_version: 6
