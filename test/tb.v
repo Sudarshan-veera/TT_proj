@@ -16,7 +16,6 @@ module tb;
     always #5 clk = ~clk;
     initial begin $dumpfile("tb.vcd"); $dumpvars(0, tb); end
 
-    // sens[1:0], nshot, alimit[3:0], hold
     task send;
         input [7:0] val;
         input [1:0] sens;
@@ -40,51 +39,61 @@ module tb;
         repeat(2) @(posedge clk); #1;
         rst_n = 1;
 
-        // ── TEST 1: ONE-SHOT, sens=1 (25%) ──────────────
-        $display("\n=== TEST 1: One-shot mode, sens=1 (25%) ===");
+        // ── TEST 1: ONE-SHOT ─────────────────────────────
+        $display("\n=== TEST 1: One-shot, sens=1 (25pct) ===");
         send(10, 2'd1, 0, 4'd0, 0);
         send(12, 2'd1, 0, 4'd0, 0);
         send(11, 2'd1, 0, 4'd0, 0);
-        send(13, 2'd1, 0, 4'd0, 0);  // ready goes high
+        send(13, 2'd1, 0, 4'd0, 0);  // RDY=1
 
-        $display("-- Normal ramp --");
+        $display("-- Normal ramp, no alert expected --");
         for (i=11; i<=16; i=i+1)
             send(i[7:0], 2'd1, 0, 4'd0, 0);
 
-        $display("-- Spike: should latch alert --");
-        send(60, 2'd1, 0, 4'd0, 0);  // ALERT=1, LOCK=1
+        $display("-- Spike: ALERT=1 LOCK=1 expected --");
+        send(60, 2'd1, 0, 4'd0, 0);
 
-        $display("-- After lock: alert stays --");
+        $display("-- Locked, alert must stay --");
         send(12, 2'd1, 0, 4'd0, 0);
         send(12, 2'd1, 0, 4'd0, 0);
 
-        // Reset for next test
         rst_n = 0; repeat(2) @(posedge clk); #1; rst_n = 1;
 
-        // ── TEST 2: N-SHOT, alimit=3, sens=2 (12.5%) ───
-        $display("\n=== TEST 2: N-shot mode, alimit=3, sens=2 (12.5%) ===");
+        // ── TEST 2: N-SHOT alimit=3 ──────────────────────
+        $display("\n=== TEST 2: N-shot, alimit=3, sens=2 (12.5pct) ===");
         send(20, 2'd2, 1, 4'd3, 0);
         send(22, 2'd2, 1, 4'd3, 0);
         send(21, 2'd2, 1, 4'd3, 0);
-        send(23, 2'd2, 1, 4'd3, 0);  // ready
+        send(23, 2'd2, 1, 4'd3, 0);  // RDY=1
 
-        $display("-- 1 anomaly: no alert yet --");
-        send(60, 2'd2, 1, 4'd3, 0);  // anomaly_count=1
-        send(20, 2'd2, 1, 4'd3, 0);  // resets count
+        $display("-- Spike 1: ALERT=0 (count=1) --");
+        send(60, 2'd2, 1, 4'd3, 0);
 
-        $display("-- 3 consecutive: alert on 3rd --");
-        send(60, 2'd2, 1, 4'd3, 0);  // count=1
-        send(60, 2'd2, 1, 4'd3, 0);  // count=2
-        send(60, 2'd2, 1, 4'd3, 0);  // ALERT=1, LOCK=1
+        $display("-- Spike 2: ALERT=0 (count=2) --");
+        send(60, 2'd2, 1, 4'd3, 0);
+
+        $display("-- Spike 3: ALERT=1 LOCK=1 (count=3, fires) --");
+        send(60, 2'd2, 1, 4'd3, 0);
 
         $display("-- Locked --");
         send(20, 2'd2, 1, 4'd3, 0);
 
-        // Reset for next test
+        $display("-- Streak break test: reset --");
+        rst_n = 0; repeat(2) @(posedge clk); #1; rst_n = 1;
+        send(20, 2'd2, 1, 4'd3, 0);
+        send(22, 2'd2, 1, 4'd3, 0);
+        send(21, 2'd2, 1, 4'd3, 0);
+        send(23, 2'd2, 1, 4'd3, 0);
+        $display("-- 2 spikes then normal: streak breaks, no alert --");
+        send(60, 2'd2, 1, 4'd3, 0);  // count=1
+        send(60, 2'd2, 1, 4'd3, 0);  // count=2
+        send(20, 2'd2, 1, 4'd3, 0);  // streak broken, count=0
+        send(22, 2'd2, 1, 4'd3, 0);  // normal
+
         rst_n = 0; repeat(2) @(posedge clk); #1; rst_n = 1;
 
-        // ── TEST 3: Gradual ramp — zero alerts ───────────
-        $display("\n=== TEST 3: Gradual ramp 10→25, sens=1, one-shot ===");
+        // ── TEST 3: Gradual ramp, no alerts ──────────────
+        $display("\n=== TEST 3: Gradual ramp 10 to 25, sens=1, no alert expected ===");
         send(10, 2'd1, 0, 4'd0, 0);
         send(11, 2'd1, 0, 4'd0, 0);
         send(12, 2'd1, 0, 4'd0, 0);
@@ -92,21 +101,19 @@ module tb;
         for (i=11; i<=25; i=i+1)
             send(i[7:0], 2'd1, 0, 4'd0, 0);
 
-        // Reset for hold mode test
         rst_n = 0; repeat(2) @(posedge clk); #1; rst_n = 1;
 
-        // ── TEST 4: Hold mode freezes mean ───────────────
+        // ── TEST 4: Hold mode ─────────────────────────────
         $display("\n=== TEST 4: Hold mode ===");
         send(10, 2'd1, 0, 4'd0, 0);
         send(12, 2'd1, 0, 4'd0, 0);
         send(11, 2'd1, 0, 4'd0, 0);
         send(13, 2'd1, 0, 4'd0, 0);
-
-        $display("-- Freeze window, inject spikes --");
-        send(40, 2'd1, 0, 4'd0, 1);  // hold=1, mean frozen, ALERT fires
+        $display("-- Freeze + spike: mean must stay at ~12 --");
+        send(40, 2'd1, 0, 4'd0, 1);  // HOLD=1, ALERT=1 LOCK=1
         send(40, 2'd1, 0, 4'd0, 1);  // still frozen
-        $display("-- Release hold --");
-        send(12, 2'd1, 0, 4'd0, 0);  // window resumes
+        $display("-- Release: mean starts updating --");
+        send(12, 2'd1, 0, 4'd0, 0);
 
         $display("\nDONE");
         $finish;

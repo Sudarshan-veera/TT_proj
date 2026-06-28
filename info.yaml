@@ -1,7 +1,7 @@
 project:
   title: "Tiny Anomaly Detection Engine"
   author: "Sudarshan"
-  description: "Sliding window anomaly detector. ui_in=sensor data. uio_in[6:0]=threshold. uio_in[7]=mode (0=stream 1=hold). uo_out[0]=ALERT uo_out[1]=READY."
+  description: "Sliding window anomaly detector with adaptive threshold. ui_in=8-bit sensor data. uio_in[7]=hold_mode uio_in[6:5]=sensitivity(00=50pct 01=25pct 10=12.5pct 11=6.25pct) uio_in[4]=nshot_mode(0=one-shot 1=n-shot) uio_in[3:0]=anomaly_limit(0-15). uo_out[0]=ALERT uo_out[1]=READY uo_out[2]=LOCKED uo_out[7:3]=mean_hi."
   language: "Verilog"
   clock_hz: 10000000
   tiles: "1x1"
@@ -22,20 +22,20 @@ pinout:
 
   uo[0]: "ALERT"
   uo[1]: "READY"
-  uo[2]: "mean[2]"
+  uo[2]: "LOCKED"
   uo[3]: "mean[3]"
   uo[4]: "mean[4]"
   uo[5]: "mean[5]"
   uo[6]: "mean[6]"
   uo[7]: "mean[7]"
 
-  uio[0]: "threshold[0]"
-  uio[1]: "threshold[1]"
-  uio[2]: "threshold[2]"
-  uio[3]: "threshold[3]"
-  uio[4]: "threshold[4]"
-  uio[5]: "threshold[5]"
-  uio[6]: "threshold[6]"
-  uio[7]: "mode"
+  uio[0]: "anomaly_limit[0]"
+  uio[1]: "anomaly_limit[1]"
+  uio[2]: "anomaly_limit[2]"
+  uio[3]: "anomaly_limit[3]"
+  uio[4]: "nshot_mode"
+  uio[5]: "sensitivity[0]"
+  uio[6]: "sensitivity[1]"
+  uio[7]: "hold_mode"
 
 yaml_version: 6
