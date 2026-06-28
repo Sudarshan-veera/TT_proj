@@ -1,14 +1,13 @@
 project:
   title: "Tiny Anomaly Detection Engine"
   author: "Sudarshan"
-  description: "Sliding window anomaly detector with adaptive threshold. ui_in=8-bit sensor data. uio_in[7]=hold_mode uio_in[6:5]=sensitivity(00=50pct 01=25pct 10=12.5pct 11=6.25pct) uio_in[4]=nshot_mode(0=one-shot 1=n-shot) uio_in[3:0]=anomaly_limit(0-15). uo_out[0]=ALERT uo_out[1]=READY uo_out[2]=LOCKED uo_out[7:3]=mean_hi."
+  description: "Sliding window anomaly detector with adaptive threshold. ui_in=8-bit sensor data. uio_in[7]=hold_mode uio_in[6:5]=sensitivity uio_in[4]=nshot_mode uio_in[3:0]=anomaly_limit. uo_out[0]=ALERT uo_out[1]=READY uo_out[2]=LOCKED uo_out[7:3]=mean_hi."
   language: "Verilog"
   clock_hz: 10000000
   tiles: "1x1"
   top_module: "tt_um_anomaly_detector"
-
-source_files:
-  - "project.v"
+  source_files:
+    - "project.v"
 
 pinout:
   ui[0]: "sensor_data[0]"
