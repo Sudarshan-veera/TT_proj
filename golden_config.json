@@ -1,0 +1,25 @@
+{
+    "PDK": "sky130A",
+    "CLOCK_PERIOD": 100,
+    "CLOCK_PORT": "clk",
+    "RESET_PORT": "rst_n",
+    "ENABLE_PORT": "ena",
+    "INPUT_PORTS": [
+        "ui_in",
+        "uio_in"
+    ],
+    "OUTPUT_PORTS": [
+        "uo_out"
+    ],
+    "TOP_MODULE": "tt_um_anomaly_detector",
+    "FP_SIZING": "absolute",
+    "DIE_AREA": "0 0 161 111.52",
+    "FP_CORE_UTIL": 40,
+    "RT_MAX_LAYER": "met4",
+    "PDN_MULTILAYER": false,
+    "IO_PIN_H_LAYER": "met4",
+    "IO_PIN_V_LAYER": "met4",
+    "IO_PIN_H_EXTENSION": -1,
+    "IO_PIN_V_EXTENSION": -1,
+    "MAGIC_WRITE_LEF_PINONLY": true
+}
