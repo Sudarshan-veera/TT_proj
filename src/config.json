@@ -16,5 +16,10 @@
     "DIE_AREA": "0 0 161 111.52",
     "FP_CORE_UTIL": 40,
     "RT_MAX_LAYER": "met4",
-    "PDN_MULTILAYER": false
+    "PDN_MULTILAYER": false,
+    "IO_PIN_H_LAYER": "met4",
+    "IO_PIN_V_LAYER": "met4",
+    "IO_PIN_H_EXTENSION": -1,
+    "IO_PIN_V_EXTENSION": -1,
+    "MAGIC_WRITE_LEF_PINONLY": true
 }
