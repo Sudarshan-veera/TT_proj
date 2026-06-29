@@ -21,5 +21,7 @@
     "IO_PIN_V_LAYER": "met4",
     "IO_PIN_H_EXTENSION": -1,
     "IO_PIN_V_EXTENSION": -1,
-    "MAGIC_WRITE_LEF_PINONLY": true
+    "MAGIC_WRITE_LEF_PINONLY": true,
+    "BOTTOM_MARGIN_MULT": 3,
+    "TOP_MARGIN_MULT": 3
 }
