@@ -75,7 +75,15 @@ class Sky130Tech(Tech):
     )
     netlist_type = "pnl"
     project_top_metal_layer = "met4"
-    librelane_config = {}
+    librelane_config = {
+        "RT_MAX_LAYER": "met4",
+        "PDN_MULTILAYER": False,
+        "IO_PIN_H_LAYER": "met4",
+        "IO_PIN_V_LAYER": "met4",
+        "IO_PIN_H_EXTENSION": -1,
+        "IO_PIN_V_EXTENSION": -1,
+        "MAGIC_WRITE_LEF_PINONLY": True,
+    }
     label_layers = [
         (64, 59),  # pwell.label
         (64, 5),  # nwell.label
@@ -133,7 +141,15 @@ class IHPTech(Tech):
     cell_regexp = r"^\s*sg13g2_(?P<cell_name>\S+)_(?P<cell_drive>\d+)"
     netlist_type = "nl"
     project_top_metal_layer = "TopMetal1"
-    librelane_config = {}
+    librelane_config = {
+        "RT_MAX_LAYER": "met4",
+        "PDN_MULTILAYER": False,
+        "IO_PIN_H_LAYER": "met4",
+        "IO_PIN_V_LAYER": "met4",
+        "IO_PIN_H_EXTENSION": -1,
+        "IO_PIN_V_EXTENSION": -1,
+        "MAGIC_WRITE_LEF_PINONLY": True,
+    }
     label_layers = [
         (8, 1),  # Metal1.label
         (8, 25),  # Metal1.text
@@ -261,7 +277,15 @@ class FpgaTech(Tech):
     cell_regexp = r""
     netlist_type = "nl"
     project_top_metal_layer = ""
-    librelane_config = {}
+    librelane_config = {
+        "RT_MAX_LAYER": "met4",
+        "PDN_MULTILAYER": False,
+        "IO_PIN_H_LAYER": "met4",
+        "IO_PIN_V_LAYER": "met4",
+        "IO_PIN_H_EXTENSION": -1,
+        "IO_PIN_V_EXTENSION": -1,
+        "MAGIC_WRITE_LEF_PINONLY": True,
+    }
     label_layers = []
     buried_layers = []
     scramble_cells = None
