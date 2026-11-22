@@ -1,6 +1,6 @@
-![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
+![](https://github.com/Sudarshan-veera/TT_proj/workflows/gds/badge.svg) ![](https://github.com/Sudarshan-veera/TT_proj/workflows/docs/badge.svg) ![](https://github.com/Sudarshan-veera/TT_proj/workflows/test/badge.svg) ![](https://github.com/Sudarshan-veera/TT_proj/workflows/fpga/badge.svg)
 
-# Tiny Tapeout Verilog Project Template
+# Tiny Anomaly Detection Engine (Tiny Tapeout)
 
 - [Read the documentation for project](docs/info.md)
 
