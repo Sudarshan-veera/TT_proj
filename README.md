@@ -1,42 +1,49 @@
 ![](https://github.com/Sudarshan-veera/TT_proj/workflows/gds/badge.svg) ![](https://github.com/Sudarshan-veera/TT_proj/workflows/docs/badge.svg) ![](https://github.com/Sudarshan-veera/TT_proj/workflows/test/badge.svg) ![](https://github.com/Sudarshan-veera/TT_proj/workflows/fpga/badge.svg)
 
-# Tiny Anomaly Detection Engine (Tiny Tapeout)
+# Tiny Anomaly Detection Engine
 
-- [Read the documentation for project](docs/info.md)
+A small Verilog design for Tiny Tapeout. It watches an 8-bit sensor value and raises an alert when a new sample jumps too far from the average of the last four. It runs at 10 MHz and fits in a single 1x1 tile.
 
-## What is Tiny Tapeout?
+I built it to see how much useful sensor logic fits in a very small amount of silicon. There is no CPU and no memory block: just a four-sample window, a running sum, and a comparator.
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+## How it works
 
-To learn more and get started, visit https://tinytapeout.com.
+1. Every clock cycle the chip takes the 8-bit sample on `ui[7:0]`.
+2. It keeps the last four accepted samples and their running sum. The mean is the sum divided by four.
+3. It compares the new sample with that mean. If the difference is bigger than the threshold, the sample is an anomaly.
+4. The threshold is the mean shifted right by 1, 2, 3 or 4 bits, depending on the sensitivity pins, and never smaller than 2.
+5. Nothing is flagged until the window holds four samples (`READY` goes high).
 
-## Set up your Verilog project
+Once `ALERT` goes high it stays high until the chip is reset.
 
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
+## Pins
 
-The GitHub action will automatically build the ASIC files using [LibreLane](https://www.zerotoasiccourse.com/terminology/librelane/).
+| Pin | Direction | Meaning |
+|---|---|---|
+| `ui[7:0]` | in | 8-bit sensor sample |
+| `uio[3:0]` | in | anomaly limit (used in n-shot mode, 0 counts as 1) |
+| `uio[4]` | in | n-shot mode on or off |
+| `uio[6:5]` | in | sensitivity: 0 = threshold mean/2 (least sensitive), 3 = mean/16 |
+| `uio[7]` | in | hold mode: freeze the window so the mean stops following the input |
+| `uo[0]` | out | ALERT |
+| `uo[1]` | out | READY |
+| `uo[2]` | out | LOCKED (an alert has been latched) |
+| `uo[7:3]` | out | top 5 bits of the window mean |
 
-## Enable GitHub actions to build the results page
+In n-shot mode an alert needs as many anomalous samples in a row as the limit says. A normal sample resets the count, and anomalous samples are kept out of the window while they are being counted.
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
+## Test it
 
-## Resources
+The testbench uses cocotb with Icarus Verilog:
 
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
+    cd test
+    pip install -r requirements.txt
+    make
 
-## What next?
+It fills the window with a steady value, checks that normal wobble does not trigger an alert, injects a spike and checks that `ALERT` goes high and stays latched. The gate-level run happens in GitHub Actions.
 
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
-  - Bluesky [@tinytapeout.com](https://bsky.app/profile/tinytapeout.com)
+## More
+
+- Design notes and pin details: [docs/info.md](docs/info.md)
+- Source: [src/project.v](src/project.v)
+- Built from the [Tiny Tapeout](https://tinytapeout.com) template, so the GitHub Actions produce the GDS, the docs page and an FPGA bitstream on every push.
